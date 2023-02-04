@@ -9,28 +9,46 @@
 #
 #By Infer114 02-04-2023
 
+echo "------------------------------------------"
 echo "downloading the last version of lighthouse"
+echo "------------------------------------------"
+echo
 curl -LO https://github.com/sigp/lighthouse/releases/download/v3.4.0/lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
 
+echo "------------------------------------------"
 echo "stopping node services"
+echo "------------------------------------------"
+echo
 sudo systemctl stop lighthousevalidator
 sudo systemctl stop lighthousebeacon
 sudo systemctl stop geth
 sudo systemctl stop mevboost
 
+echo "------------------------------------------"
 echo "unzipping and replacing the version"
+echo "------------------------------------------"
+echo
 tar xvf lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
 sudo cp lighthouse /usr/local/bin
 
+echo "------------------------------------------"
 echo "starting all node services"
+echo "------------------------------------------"
+echo
 sudo systemctl start geth
 sudo systemctl start lighthousebeacon
 sudo systemctl start lighthousevalidator
 sudo systemctl start mevboost
 
+echo "------------------------------------------"
 echo "cleaning the download files"
+echo "------------------------------------------"
+echo
 sudo rm lighthouse
 sudo rm lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
 
+echo "------------------------------------------"
 echo "checking if the version is correctly installed"
+echo "------------------------------------------"
+echo
 /usr/local/bin/lighthouse --version
