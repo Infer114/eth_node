@@ -3,7 +3,7 @@
 #sources can be found here : 
 #https://github.com/sigp/lighthouse/releases
 #you can dowload by just using the command :
-#wget https://github.com/Infer114/eth_node/edit/main/lighthouse_update.sh
+#wget https://raw.githubusercontent.com/Infer114/eth_node/main/lighthouse_update.sh
 #then starting the script with :
 #sh lighthouse_update.sh
 #
