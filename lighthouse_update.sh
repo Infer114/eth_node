@@ -17,6 +17,7 @@ sudo systemctl stop lighthousevalidator
 sudo systemctl stop lighthousebeacon
 sudo systemctl stop geth
 sudo systemctl stop mevboost
+read a
 
 #unzipping and replacing the version
 tar xvf lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
@@ -27,6 +28,7 @@ sudo systemctl start geth
 sudo systemctl start lighthousebeacon
 sudo systemctl start lighthousevalidator
 sudo systemctl start mevboost
+read a
 
 #cleaning the download files
 sudo rm lighthouse
@@ -34,3 +36,4 @@ sudo rm lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
 
 #checking if the version is correctly installed
 /usr/local/bin/lighthouse --version
+read a
