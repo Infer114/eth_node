@@ -1,3 +1,6 @@
-#just need to change the correct .json name
+#just need to change path and correct .json name
+#can be run on any machine running lighthouse, validators do not need to be active on it to be exited
+#lighthouse is just gonna send a BLS signature for exiting, which results in a non-slashable event
+#not tested by me, stay very carefull with this
 
-lighthouse --network mainnet account validator exit --keystore /home/eth1/validator_keys/keystore.json --beacon-node http://localhost:5052
+lighthouse --network mainnet account validator exit --keystore /home/eth/validator_keys/keystore.json --beacon-node http://localhost:5052
