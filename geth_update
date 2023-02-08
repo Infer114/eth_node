@@ -1,0 +1,11 @@
+sudo systemctl stop lighthousevalidator
+sudo systemctl stop lighthousebeacon
+sudo systemctl stop mevboost
+sudo systemctl stop geth
+
+sudo apt update && sudo apt upgrade -y
+
+sudo systemctl start geth
+sudo systemctl start lighthousebeacon
+sudo systemctl start lighthousevalidator
+sudo systemctl start mevboost
