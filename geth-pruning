@@ -1,0 +1,3 @@
+sudo systemctl stop geth
+sudo -u goeth geth --datadir /var/lib/goethereum snapshot prune-state
+sudo systemctl start geth
