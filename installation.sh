@@ -1,3 +1,5 @@
+#working on it, do not use
+
 #creating user eth1
 adduser eth1
 #granting superuser priviliges to this user
