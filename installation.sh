@@ -41,6 +41,9 @@ sudo mkdir -p /var/lib/goethereum
 
 sudo chown -R goeth:goeth /var/lib/goethereum
 
+#a tester
+#cat <<EOF >/etc/systemd/system/geth.service
+#EOF
 sudo nano /etc/systemd/system/geth.service
 
 #ajouter service
