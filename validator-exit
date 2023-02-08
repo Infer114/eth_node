@@ -1,0 +1,3 @@
+#just need to change the correct .json name
+
+lighthouse --network mainnet account validator exit --keystore /home/eth1/validator_keys/keystore.json --beacon-node http://localhost:5052
