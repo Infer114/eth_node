@@ -1,6 +1,5 @@
 #working on it, not tested !
 
-cd ~
 wget https://github.com/flashbots/mev-boost/releases/download/v1.4.0/mev-boost_1.4.0_linux_amd64.tar.gz
 sha256sum mev-boost_1.4.0_linux_amd64.tar.gz
 tar xvf mev-boost_1.4.0_linux_amd64.tar.gz
