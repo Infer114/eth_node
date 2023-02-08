@@ -1,3 +1,5 @@
+#working on it, do not use for now
+
 sudo systemctl stop lighthousevalidator
 sudo systemctl stop lighthousebeacon
 sudo systemctl stop mevboost
