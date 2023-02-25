@@ -9,20 +9,22 @@ usermod -aG sudo eth1
 sudo apt update && sudo apt upgrade -y
 sudo apt dist-upgrade && sudo apt autoremove
 
-#modifying the ssh port
-sudo nano /etc/ssh/sshd_config
-sudo systemctl restart ssh
-
 #configuring firewall
 sudo apt install ufw
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-#sudo ufw allow SSHPORT /tcp
-sudo ufw deny 22/tcp
+
 #adding geth port
 sudo ufw allow 30303
 #adding lighthouse port
 sudo ufw allow 9000
+
+#modifying the ssh port
+#sudo nano /etc/ssh/sshd_config
+#sudo systemctl restart ssh
+#sudo ufw allow SSHPORT /tcp
+#sudo ufw deny 22/tcp
+
 sudo ufw enable
 sudo ufw status numbered
 
@@ -36,12 +38,10 @@ sudo apt update
 sudo apt install geth
 
 sudo useradd --no-create-home --shell /bin/false goeth
-
 sudo mkdir -p /var/lib/goethereum
-
 sudo chown -R goeth:goeth /var/lib/goethereum
 
-#a tester
+#creating geth service
 cat <<EOF >/etc/systemd/system/geth.service
 
 [Unit]
@@ -61,14 +61,11 @@ ExecStart=geth --http --datadir /var/lib/goethereum --authrpc.jwtsecret /var/lib
 WantedBy=default.target
 EOF
 
-
-#ajouter service
-
 sudo systemctl daemon-reload
 sudo systemctl start geth
 sudo systemctl enable geth
 
-#installation lighthouse
+#installating lighthouse
 sudo apt install curl
 curl -LO https://github.com/sigp/lighthouse/releases/download/v3.5.0/lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
@@ -77,22 +74,26 @@ sudo cp lighthouse /usr/local/bin
 sudo rm lighthouse
 sudo rm lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
+#importing validators
 sudo mkdir -p /var/lib/lighthouse
 sudo chown -R eth1:eth1 /var/lib/lighthouse
-#ajout des validateurs ici (créé /var/lib/lighthouse/validators
+#add validators here (will create /var/lib/lighthouse/validators)
+#/usr/local/bin/lighthouse --network mainnet account validator import --directory $HOME/eth2deposit-cli/validator_keys --datadir /var/lib/lighthouse
 sudo chown -R root:root /var/lib/lighthouse
+
+#creating lighthouse service 
 
 sudo useradd --no-create-home --shell /bin/false lighthousebeacon
 sudo mkdir -p /var/lib/lighthouse/beacon
 sudo chown -R lighthousebeacon:lighthousebeacon /var/lib/lighthouse/beacon
 sudo chmod 700 /var/lib/lighthouse/beacon
 
-#creation service lighthouse
 cat <<EOF >/etc/systemd/system/lighthousebeacon.service
 [Unit]
 Description=Lighthouse Eth2 Client Beacon Node
 Wants=network-online.target
 After=network-online.target
+
 [Service]
 User=lighthousebeacon
 Group=lighthousebeacon
@@ -100,6 +101,7 @@ Type=simple
 Restart=always
 RestartSec=5
 ExecStart=/usr/local/bin/lighthouse bn --network mainnet --datadir /var/lib/lighthouse --staking --execution-endpoint http://127.0.0.1:8551 --execution-jwt /var/lib/jwtsecret/jwt.hex --builder-profit-threshold 250000000000000000
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -108,18 +110,19 @@ sudo systemctl daemon-reload
 sudo systemctl start lighthousebeacon
 sudo systemctl enable lighthousebeacon
 
-#config validator service
+#creating validator service
+
 sudo useradd --no-create-home --shell /bin/false lighthousevalidator
 #besoin d'avoir importé les clés
 sudo chown -R lighthousevalidator:lighthousevalidator /var/lib/lighthouse/validators
 sudo chmod 700 /var/lib/lighthouse/validators
 
-#creation service lighthouse
 cat <<EOF >/etc/systemd/system/lighthousevalidator.service
 [Unit]
 Description=Lighthouse Eth2 Client Validator Node
 Wants=network-online.target
 After=network-online.target
+
 [Service]
 User=lighthousevalidator
 Group=lighthousevalidator
@@ -127,6 +130,7 @@ Type=simple
 Restart=always
 RestartSec=5
 ExecStart=/usr/local/bin/lighthouse vc --network mainnet --datadir /var/lib/lighthouse --suggested-fee-recipient 0x0ETH_ADRESSE_HERE --graffiti "<yourgraffiti>" --builder-proposals
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -136,16 +140,17 @@ sudo systemctl start lighthousevalidator
 sudo systemctl enable lighthousevalidator
 
 #installing MEV boost
-sudo useradd --no-create-home --shell /bin/false mevboost
 
+sudo useradd --no-create-home --shell /bin/false mevboost
 cd ~
 wget https://github.com/flashbots/mev-boost/releases/download/v1.4.0/mev-boost_1.4.0_linux_amd64.tar.gz
-
-sha256sum mev-boost_1.4.0_linux_amd64.tar.gz
+#sha256sum mev-boost_1.4.0_linux_amd64.tar.gz
 tar xvf mev-boost_1.4.0_linux_amd64.tar.gz
 sudo cp mev-boost /usr/local/bin
 rm mev-boost LICENSE README.md mev-boost_1.4.0_linux_amd64.tar.gz
 sudo chown mevboost:mevboost /usr/local/bin/mev-boost
+
+#creating mev-boost service
 
 cat <<EOF >/etc/systemd/system/mevboost.service
 [Unit]
