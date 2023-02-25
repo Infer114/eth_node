@@ -1,4 +1,4 @@
-#working on it, do not use for now
+#just an automated script to stop + prune + restart geth
 
 sudo systemctl stop geth
 sudo -u goeth geth --datadir /var/lib/goethereum snapshot prune-state
