@@ -54,8 +54,8 @@ echo "creating JWT token"
 echo "------------------------------------------"
 
 sudo mkdir -p /var/lib/jwtsecret
-openssl rand -hex 32 | sudo tee /var/lib/ethereum/jwttoken
-sudo chmod +r /var/lib/ethereum/jwttoken
+openssl rand -hex 32 | sudo tee /var/lib/jwtsecret/jwt.hex
+sudo chmod +r /var/lib/jwtsecret/jwt.hex
 
 echo "------------------------------------------"
 echo "installing geth"
