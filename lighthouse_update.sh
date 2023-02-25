@@ -1,5 +1,5 @@
 #this is a script to update your lighthouse client to version v3.4.0 on ubuntu 22.04
-#be carefull to change the version numbers if this script is not editer over time
+#be carefull to change the version numbers if this script is not edited over time
 #sources can be found here : 
 #https://github.com/sigp/lighthouse/releases
 #you can dowload by just using the command :
@@ -13,7 +13,7 @@ echo "------------------------------------------"
 echo "downloading the last version of lighthouse"
 echo "------------------------------------------"
 echo
-curl -LO https://github.com/sigp/lighthouse/releases/download/v3.4.0/lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+curl -LO https://github.com/sigp/lighthouse/releases/download/v3.5.0/lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 echo
 
 echo "------------------------------------------"
@@ -30,7 +30,7 @@ echo "------------------------------------------"
 echo "unzipping and replacing the version"
 echo "------------------------------------------"
 echo
-tar xvf lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+tar xvf lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 sudo cp lighthouse /usr/local/bin
 echo
 
@@ -49,7 +49,7 @@ echo "cleaning the download files"
 echo "------------------------------------------"
 echo
 sudo rm lighthouse
-sudo rm lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+sudo rm lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 echo
 
 echo "------------------------------------------"
