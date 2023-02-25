@@ -42,9 +42,25 @@ sudo mkdir -p /var/lib/goethereum
 sudo chown -R goeth:goeth /var/lib/goethereum
 
 #a tester
-#cat <<EOF >/etc/systemd/system/geth.service
-#EOF
-sudo nano /etc/systemd/system/geth.service
+cat <<EOF >/etc/systemd/system/geth.service
+
+[Unit]
+Description=Go Ethereum Client
+After=network.target
+Wants=network.target
+
+[Service]
+User=goeth
+Group=goeth
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=geth --http --datadir /var/lib/goethereum --authrpc.jwtsecret /var/lib/jwtsecret/jwt.hex
+
+[Install]
+WantedBy=default.target
+EOF
+
 
 #ajouter service
 
@@ -54,12 +70,12 @@ sudo systemctl enable geth
 
 #installation lighthouse
 sudo apt install curl
-curl -LO https://github.com/sigp/lighthouse/releases/download/v3.4.0/lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+curl -LO https://github.com/sigp/lighthouse/releases/download/v3.5.0/lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
-tar xvf lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+tar xvf lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 sudo cp lighthouse /usr/local/bin
 sudo rm lighthouse
-sudo rm lighthouse-v3.4.0-x86_64-unknown-linux-gnu.tar.gz
+sudo rm lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
 sudo mkdir -p /var/lib/lighthouse
 sudo chown -R eth1:eth1 /var/lib/lighthouse
@@ -72,8 +88,21 @@ sudo chown -R lighthousebeacon:lighthousebeacon /var/lib/lighthouse/beacon
 sudo chmod 700 /var/lib/lighthouse/beacon
 
 #creation service lighthouse
-sudo nano /etc/systemd/system/lighthousebeacon.service
-#service ici
+cat <<EOF >/etc/systemd/system/lighthousebeacon.service
+[Unit]
+Description=Lighthouse Eth2 Client Beacon Node
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=lighthousebeacon
+Group=lighthousebeacon
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/lighthouse bn --network mainnet --datadir /var/lib/lighthouse --staking --execution-endpoint http://127.0.0.1:8551 --execution-jwt /var/lib/jwtsecret/jwt.hex --builder-profit-threshold 250000000000000000
+[Install]
+WantedBy=multi-user.target
+EOF
 
 sudo systemctl daemon-reload
 sudo systemctl start lighthousebeacon
@@ -85,8 +114,23 @@ sudo useradd --no-create-home --shell /bin/false lighthousevalidator
 sudo chown -R lighthousevalidator:lighthousevalidator /var/lib/lighthouse/validators
 sudo chmod 700 /var/lib/lighthouse/validators
 
-sudo nano /etc/systemd/system/lighthousevalidator.service
-#ajouter service
+#creation service lighthouse
+cat <<EOF >/etc/systemd/system/lighthousevalidator.service
+[Unit]
+Description=Lighthouse Eth2 Client Validator Node
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=lighthousevalidator
+Group=lighthousevalidator
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/lighthouse vc --network mainnet --datadir /var/lib/lighthouse --suggested-fee-recipient 0x0ETH_ADRESSE_HERE --graffiti "<yourgraffiti>" --builder-proposals
+[Install]
+WantedBy=multi-user.target
+EOF
+
 sudo systemctl daemon-reload
 sudo systemctl start lighthousevalidator
 sudo systemctl enable lighthousevalidator
@@ -95,16 +139,15 @@ sudo systemctl enable lighthousevalidator
 sudo useradd --no-create-home --shell /bin/false mevboost
 
 cd ~
-wget https://github.com/flashbots/mev-boost/releases/download/v1.3.2/mev-boost_1.3.2_linux_amd64.tar.gz
+wget https://github.com/flashbots/mev-boost/releases/download/v1.4.0/mev-boost_1.4.0_linux_amd64.tar.gz
 
-sha256sum mev-boost_1.3.2_linux_amd64.tar.gz
-tar xvf mev-boost_1.3.2_linux_amd64.tar.gz
+sha256sum mev-boost_1.4.0_linux_amd64.tar.gz
+tar xvf mev-boost_1.4.0_linux_amd64.tar.gz
 sudo cp mev-boost /usr/local/bin
-rm mev-boost LICENSE README.md mev-boost_1.3.2_linux_amd64.tar.gz
+rm mev-boost LICENSE README.md mev-boost_1.4.0_linux_amd64.tar.gz
 sudo chown mevboost:mevboost /usr/local/bin/mev-boost
 
-sudo nano /etc/systemd/system/mevboost.service
-
+cat <<EOF >/etc/systemd/system/mevboost.service
 [Unit]
 Description=mev-boost (Mainnet)
 Wants=network-online.target
@@ -123,6 +166,7 @@ ExecStart=mev-boost \
 
 [Install]
 WantedBy=multi-user.target
+EOF
 
 sudo systemctl daemon-reload
 sudo systemctl start mevboost
