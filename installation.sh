@@ -55,6 +55,7 @@ echo "------------------------------------------"
 
 sudo mkdir -p /var/lib/jwtsecret
 openssl rand -hex 32 | sudo tee /var/lib/ethereum/jwttoken
+sudo chmod +r /var/lib/ethereum/jwttoken
 
 echo "------------------------------------------"
 echo "installing geth"
