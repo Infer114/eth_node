@@ -5,6 +5,8 @@ sudo systemctl stop lighthousebeacon
 sudo systemctl stop geth
 sudo systemctl stop mevboost
 
+sleep 30
+
 sudo apt update && sudo apt upgrade -y
 
 sudo systemctl start geth
