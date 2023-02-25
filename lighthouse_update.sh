@@ -24,6 +24,7 @@ sudo systemctl stop lighthousevalidator
 sudo systemctl stop lighthousebeacon
 sudo systemctl stop geth
 sudo systemctl stop mevboost
+sleep 30
 echo
 
 echo "------------------------------------------"
