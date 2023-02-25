@@ -10,22 +10,24 @@
 #By Infer114 02-25-2023
 
 echo "------------------------------------------"
-echo "test"
+echo "creating eth1 user and updating server"
 echo "------------------------------------------"
-echo
-# test
-echo
 
 #creating user eth1
 adduser eth1
-#granting superuser priviliges to this user
+#granting superuser to user
 usermod -aG sudo eth1
 
 #updating the server
 sudo apt update && sudo apt upgrade -y
 sudo apt dist-upgrade && sudo apt autoremove
 
-#configuring firewall
+echo done
+
+echo "------------------------------------------"
+echo "installing and configuring firewall"
+echo "------------------------------------------"
+
 sudo apt install ufw
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
@@ -41,14 +43,23 @@ sudo ufw allow 9000
 #sudo ufw allow SSHPORT /tcp
 #sudo ufw deny 22/tcp
 
+#activating firewall
 sudo ufw enable
 sudo ufw status numbered
 
-#creating JWT token
+echo done
+
+echo "------------------------------------------"
+echo "creating JWT token"
+echo "------------------------------------------"
+
 sudo mkdir -p /var/lib/jwtsecret
 openssl rand -hex 32 | sudo tee /var/lib/ethereum/jwttoken
 
-#installing geth
+echo "------------------------------------------"
+echo "installing geth"
+echo "------------------------------------------"
+
 sudo add-apt-repository -y ppa:ethereum/ethereum
 sudo apt update
 sudo apt install geth
@@ -57,7 +68,12 @@ sudo useradd --no-create-home --shell /bin/false goeth
 sudo mkdir -p /var/lib/goethereum
 sudo chown -R goeth:goeth /var/lib/goethereum
 
-#creating geth service
+echo done
+
+echo "------------------------------------------"
+echo "creating geth service"
+echo "------------------------------------------"
+
 cat <<EOF >/etc/systemd/system/geth.service
 
 [Unit]
@@ -81,7 +97,12 @@ sudo systemctl daemon-reload
 sudo systemctl start geth
 sudo systemctl enable geth
 
-#installating lighthouse
+echo done
+
+echo "------------------------------------------"
+echo "installating lighthouse"
+echo "------------------------------------------"
+
 sudo apt install curl
 curl -LO https://github.com/sigp/lighthouse/releases/download/v3.5.0/lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
@@ -90,14 +111,24 @@ sudo cp lighthouse /usr/local/bin
 sudo rm lighthouse
 sudo rm lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
 
-#importing validators
+echo done
+
+echo "------------------------------------------"
+echo "importing validators"
+echo "------------------------------------------"
+
 sudo mkdir -p /var/lib/lighthouse
 sudo chown -R eth1:eth1 /var/lib/lighthouse
 #add validators here (will create /var/lib/lighthouse/validators)
 #/usr/local/bin/lighthouse --network mainnet account validator import --directory $HOME/eth2deposit-cli/validator_keys --datadir /var/lib/lighthouse
 sudo chown -R root:root /var/lib/lighthouse
 
-#creating lighthouse service 
+echo done
+
+echo "------------------------------------------"
+echo "creating lighthouse beacon service"
+echo "------------------------------------------"
+
 sudo useradd --no-create-home --shell /bin/false lighthousebeacon
 sudo mkdir -p /var/lib/lighthouse/beacon
 sudo chown -R lighthousebeacon:lighthousebeacon /var/lib/lighthouse/beacon
@@ -125,7 +156,12 @@ sudo systemctl daemon-reload
 sudo systemctl start lighthousebeacon
 sudo systemctl enable lighthousebeacon
 
-#creating validator service
+echo done
+
+echo "------------------------------------------"
+echo "creating validator service"
+echo "------------------------------------------"
+
 sudo useradd --no-create-home --shell /bin/false lighthousevalidator
 #you must allready have imported keys here
 sudo chown -R lighthousevalidator:lighthousevalidator /var/lib/lighthouse/validators
@@ -153,7 +189,12 @@ sudo systemctl daemon-reload
 sudo systemctl start lighthousevalidator
 sudo systemctl enable lighthousevalidator
 
-#installing MEV boost
+echo done
+
+echo "------------------------------------------"
+echo "installing MEV boost"
+echo "------------------------------------------"
+
 sudo useradd --no-create-home --shell /bin/false mevboost
 cd ~
 wget https://github.com/flashbots/mev-boost/releases/download/v1.4.0/mev-boost_1.4.0_linux_amd64.tar.gz
@@ -163,7 +204,12 @@ sudo cp mev-boost /usr/local/bin
 rm mev-boost LICENSE README.md mev-boost_1.4.0_linux_amd64.tar.gz
 sudo chown mevboost:mevboost /usr/local/bin/mev-boost
 
-#creating mev-boost service
+echo done
+
+echo "------------------------------------------"
+echo "creating mev-boost service"
+echo "------------------------------------------"
+
 cat <<EOF >/etc/systemd/system/mevboost.service
 [Unit]
 Description=mev-boost (Mainnet)
@@ -188,3 +234,9 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl start mevboost
 sudo systemctl enable mevboost
+
+echo done
+
+echo "------------------------------------------"
+echo "Script done"
+echo "------------------------------------------"
