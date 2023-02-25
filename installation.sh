@@ -82,7 +82,6 @@ sudo chown -R eth1:eth1 /var/lib/lighthouse
 sudo chown -R root:root /var/lib/lighthouse
 
 #creating lighthouse service 
-
 sudo useradd --no-create-home --shell /bin/false lighthousebeacon
 sudo mkdir -p /var/lib/lighthouse/beacon
 sudo chown -R lighthousebeacon:lighthousebeacon /var/lib/lighthouse/beacon
@@ -111,9 +110,8 @@ sudo systemctl start lighthousebeacon
 sudo systemctl enable lighthousebeacon
 
 #creating validator service
-
 sudo useradd --no-create-home --shell /bin/false lighthousevalidator
-#besoin d'avoir importé les clés
+#you must allready have imported keys here
 sudo chown -R lighthousevalidator:lighthousevalidator /var/lib/lighthouse/validators
 sudo chmod 700 /var/lib/lighthouse/validators
 
@@ -140,7 +138,6 @@ sudo systemctl start lighthousevalidator
 sudo systemctl enable lighthousevalidator
 
 #installing MEV boost
-
 sudo useradd --no-create-home --shell /bin/false mevboost
 cd ~
 wget https://github.com/flashbots/mev-boost/releases/download/v1.4.0/mev-boost_1.4.0_linux_amd64.tar.gz
@@ -151,7 +148,6 @@ rm mev-boost LICENSE README.md mev-boost_1.4.0_linux_amd64.tar.gz
 sudo chown mevboost:mevboost /usr/local/bin/mev-boost
 
 #creating mev-boost service
-
 cat <<EOF >/etc/systemd/system/mevboost.service
 [Unit]
 Description=mev-boost (Mainnet)
