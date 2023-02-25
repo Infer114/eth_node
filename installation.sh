@@ -1,4 +1,20 @@
-#working on it, do not use
+#this is a script to install an ETH node using geth + lighthouse on ubuntu 22.04
+#be carefull to change the version numbers if this script is not edited over time
+#sources can be found here : 
+#https://github.com/sigp/lighthouse/releases
+#you can dowload by just using the command :
+#wget https://raw.githubusercontent.com/Infer114/eth_node/main/installation.sh
+#then starting the script with :
+#sh installation.sh
+#
+#By Infer114 02-25-2023
+
+echo "------------------------------------------"
+echo "test"
+echo "------------------------------------------"
+echo
+# test
+echo
 
 #creating user eth1
 adduser eth1
