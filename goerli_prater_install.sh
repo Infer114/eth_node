@@ -31,6 +31,7 @@ sudo ufw default allow outgoing
 sudo ufw allow 30303
 #adding lighthouse port
 sudo ufw allow 9000
+#adding default ssh port
 sudo ufw allow 22/tcp
 
 #activating firewall
