@@ -1,13 +1,12 @@
-#this is a script to update your lighthouse client to version v3.4.0 on ubuntu 22.04
-#be carefull to change the version numbers if this script is not edited over time
+#this is a documentation to update your lighthouse client to version v3.4.0 on ubuntu 22.04
+#be carefull to change the version numbers if this documentation is not edited over time
 #sources can be found here : 
 #https://github.com/sigp/lighthouse/releases
 #you can dowload by just using the command :
 #wget https://raw.githubusercontent.com/Infer114/eth_node/main/lighthouse_update.sh
-#then starting the script with :
-#sh lighthouse_update.sh
 #
-#By Infer114 02-04-2023
+#
+#By Infer114 04-06-2023
 
 echo "------------------------------------------"
 echo "downloading the last version of lighthouse"
