@@ -1,13 +1,12 @@
-#this is a script to install an ETH testnet node using geth + lighthouse on ubuntu 22.04
-#be carefull to change the version numbers if this script is not edited over time
+#this is a documentation to install an ETH testnet node using geth + lighthouse on ubuntu 22.04
+#be carefull to change the version numbers if this documentation is not edited over time
 #sources can be found here : 
 #https://github.com/sigp/lighthouse/releases
 #you can dowload by just using the command :
 #wget https://raw.githubusercontent.com/Infer114/eth_node/main/goerli_prater_install.sh
-#then starting the script with :
-#sh goerli_prater_install.sh
 #
-#By Infer114 02-25-2023
+#
+#By Infer114 04-06-2023
 
 echo "------------------------------------------"
 echo "updating server"
