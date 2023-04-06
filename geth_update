@@ -1,11 +1,9 @@
-#just automated stop + update + start
+#just the commands to stop + update + start geth
 
 sudo systemctl stop lighthousevalidator
 sudo systemctl stop lighthousebeacon
 sudo systemctl stop geth
 sudo systemctl stop mevboost
-
-sleep 30
 
 sudo apt update && sudo apt upgrade -y
 
