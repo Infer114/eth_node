@@ -1,4 +1,4 @@
-#just an automated script to stop + prune + restart geth
+#just the commands to stop + prune + restart geth
 
 sudo systemctl stop geth
 sleep 30
