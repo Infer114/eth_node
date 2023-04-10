@@ -96,9 +96,12 @@ ExecStart=/usr/local/bin/besu/bin/besu \
   --data-path=/var/lib/besu \
   --data-storage-format=BONSAI \
   --engine-jwt-secret=/var/lib/jwtsecret/jwt.hex
-  ----nat-method=UPNPP2PONLY
+  --nat-method=UPNPP2PONLY
+  --p2p-host=WAN_ADDRESS_HERE
 [Install]
 WantedBy=multi-user.target
+
+#add you WAN ADDRESS in the service configuration file
 
 sudo systemctl daemon-reload
 sudo systemctl start besu
