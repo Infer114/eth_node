@@ -96,6 +96,7 @@ ExecStart=/usr/local/bin/besu/bin/besu \
   --data-path=/var/lib/besu \
   --data-storage-format=BONSAI \
   --engine-jwt-secret=/var/lib/jwtsecret/jwt.hex
+  ----nat-method=UPNPP2PONLY
 [Install]
 WantedBy=multi-user.target
 
