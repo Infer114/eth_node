@@ -1,4 +1,4 @@
-#this is a documentation to update your lighthouse client to version v3.4.0 on ubuntu 22.04
+#this is a documentation to update your lighthouse client to version v4.1.0 on ubuntu 22.04
 #be carefull to change the version numbers if this documentation is not edited over time
 #sources can be found here : 
 #https://github.com/sigp/lighthouse/releases
