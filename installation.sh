@@ -105,12 +105,12 @@ echo "installating lighthouse"
 echo "------------------------------------------"
 
 sudo apt install curl
-curl -LO https://github.com/sigp/lighthouse/releases/download/v3.5.0/lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
+curl -LO https://github.com/sigp/lighthouse/releases/download/v4.1.0/lighthouse-v4.1.0-x86_64-unknown-linux-gnu.tar.gz
 
-tar xvf lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
+tar xvf lighthouse-v4.1.0-x86_64-unknown-linux-gnu.tar.gz
 sudo cp lighthouse /usr/local/bin
 sudo rm lighthouse
-sudo rm lighthouse-v3.5.0-x86_64-unknown-linux-gnu.tar.gz
+sudo rm lighthouse-v4.1.0-x86_64-unknown-linux-gnu.tar.gz
 
 echo done
 
