@@ -1,5 +1,5 @@
 
-#this is a documentation to install an ETH node using besu + nimbus on ubuntu 22.04
+#this is a documentation to install an ETH node using besu + nimbus on ubuntu 22.04, using port 30304 for EL (take care to open it on your router TCP/UDP, besu will need it for peer discovery)
 #be carefull to change the version numbers if this documentation is not edited over time
 #sources can be found here : 
 #https://github.com/hyperledger/besu/
@@ -11,7 +11,7 @@
 #By Infer114 04-06-2023
 
 echo "------------------------------------------"
-echo "creating eth1 user and updating server"
+echo "creating eth user and updating server"
 echo "------------------------------------------"
 
 #creating user eth3
@@ -34,7 +34,7 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
 #adding geth port
-sudo ufw allow 30303
+sudo ufw allow 30304
 #adding lighthouse port
 sudo ufw allow 9000
 
@@ -67,11 +67,11 @@ echo "------------------------------------------"
 #https://github.com/hyperledger/besu/releases
 
 cd ~
-curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.1.2/besu-23.1.2.tar.gz
-tar xvf besu-23.1.2.tar.gz
-sudo cp -a besu-23.1.2 /usr/local/bin/besu
-rm besu-23.1.2.tar.gz
-rm -r besu-23.1.2
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.1.3/besu-23.1.3.tar.gz
+tar xvf besu-23.1.3.tar.gz
+sudo cp -a besu-23.1.3 /usr/local/bin/besu
+rm besu-23.1.3.tar.gz
+rm -r besu-23.1.3
 sudo apt -y install openjdk-17-jre
 sudo apt install -y libjemalloc-dev
 sudo useradd --no-create-home --shell /bin/false besu
@@ -96,6 +96,7 @@ ExecStart=/usr/local/bin/besu/bin/besu \
   --data-path=/var/lib/besu \
   --data-storage-format=BONSAI \
   --engine-jwt-secret=/var/lib/jwtsecret/jwt.hex
+  --p2p-port=30304
   --nat-method=UPNPP2PONLY
   --p2p-host=WAN_ADDRESS_HERE
 [Install]
