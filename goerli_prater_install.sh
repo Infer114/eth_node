@@ -32,6 +32,8 @@ sudo ufw allow 30303
 sudo ufw allow 9000
 #adding default ssh port
 sudo ufw allow 22/tcp
+#adding geth RPC port
+sudo ufw allow 8545
 
 #activating firewall
 sudo ufw enable
@@ -64,6 +66,8 @@ echo "------------------------------------------"
 echo "creating geth service"
 echo "------------------------------------------"
 
+#edit the XX with your own machine IP :
+
 cat <<EOF >/etc/systemd/system/geth.service
 [Unit]
 Description=Go Ethereum Client
@@ -75,7 +79,7 @@ Group=goeth
 Type=simple
 Restart=always
 RestartSec=5
-ExecStart=geth --goerli --http --datadir /var/lib/goethereum --authrpc.jwtsecret /var/lib/jwtsecret/jwt.hex
+ExecStart=geth --goerli --http --http.api eth,net,web3 --http.addr 192.168.1.XX --http.port 8545 --datadir /var/lib/goethereum --authrpc.jwtsecret /var/lib/jwtsecret/jwt.hex
 [Install]
 WantedBy=default.target
 EOF
