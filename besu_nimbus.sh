@@ -67,11 +67,11 @@ echo "------------------------------------------"
 #https://github.com/hyperledger/besu/releases
 
 cd ~
-curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.1.3/besu-23.1.3.tar.gz
-tar xvf besu-23.1.3.tar.gz
-sudo cp -a besu-23.1.3 /usr/local/bin/besu
-rm besu-23.1.3.tar.gz
-rm -r besu-23.1.3
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.7.2/besu-23.7.2.tar.gz
+tar xvf besu-23.7.2.tar.gz
+sudo cp -a besu-23.7.2 /usr/local/bin/besu
+rm besu-23.7.2.tar.gz
+rm -r besu-23.7.2
 sudo apt -y install openjdk-17-jre
 sudo apt install -y libjemalloc-dev
 sudo useradd --no-create-home --shell /bin/false besu
@@ -119,14 +119,14 @@ echo "------------------------------------------"
 #https://github.com/status-im/nimbus-eth2/releases
 
 cd ~
-curl -LO https://github.com/status-im/nimbus-eth2/releases/download/v23.3.2/nimbus-eth2_Linux_amd64_23.3.2_6c0d756d.tar.gz
-tar xvf nimbus-eth2_Linux_amd64_23.3.2_6c0d756d.tar.gz
-cd nimbus-eth2_Linux_amd64_23.3.2_6c0d756d
+curl -LO https://github.com/status-im/nimbus-eth2/releases/download/v23.9.0/nimbus-eth2_Linux_amd64_23.9.0_6c0d756d.tar.gz
+tar xvf nimbus-eth2_Linux_amd64_23.9.0_6c0d756d.tar.gz
+cd nimbus-eth2_Linux_amd64_23.9.0_6c0d756d
 sudo cp build/nimbus_beacon_node /usr/local/bin
 
 cd ~
-rm nimbus-eth2_Linux_amd64_23.3.2_6c0d756d.tar.gz
-rm -r nimbus-eth2_Linux_amd64_23.3.2_6c0d756d
+rm nimbus-eth2_Linux_amd64_23.9.0_6c0d756d.tar.gz
+rm -r nimbus-eth2_Linux_amd64_23.9.0_6c0d756d
 
 #importer les keystore :
 #Placer les fichiers ici : $HOME/staking-deposit-cli/validator_keys
