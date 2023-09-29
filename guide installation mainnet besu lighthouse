@@ -86,7 +86,7 @@ nat-method="UPNPP2PONLY"
 #rpc-http-cors-origins=["chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn"]
 #host-allowlist=["*"]
 
-sudo nano /etc/systemd/system/besu.service
+cat <<EOF >/etc/systemd/system/besu.service
 
 [Unit]
 Description=Besu Execution Client (Mainnet)
@@ -103,6 +103,7 @@ ExecStart=/usr/local/bin/besu/bin/besu \
   --config-file=/var/lib/besu/config.toml
 [Install]
 WantedBy=multi-user.target
+EOF
 
 #if problems for sync
 #add your WAN ADDRESS in the service configuration file if needed with   --p2p-host=WAN_ADDRESS_HERE
