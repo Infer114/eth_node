@@ -1,0 +1,333 @@
+echo "------------------------------------------"
+echo "creating eth user and updating server"
+echo "------------------------------------------"
+
+#creating user eth2
+adduser eth2
+#granting superuser to user
+usermod -aG sudo eth2
+
+#updating the server
+sudo apt update && sudo apt upgrade -y
+sudo apt dist-upgrade && sudo apt autoremove
+
+echo "------------------------------------------"
+echo "installing and configuring firewall"
+echo "------------------------------------------"
+
+sudo apt install ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+#adding besu port
+sudo ufw allow 30304
+#adding besu RPC port
+sudo ufw allow 8545
+#adding lighthouse port
+sudo ufw allow 9000
+#adding grafana port
+sudo ufw allow 3000/tcp
+
+#modifying the ssh port
+sudo nano /etc/ssh/sshd_config
+#add ssh port here
+sudo systemctl restart ssh
+#add your own ssh port now :
+sudo ufw allow 0000/tcp
+sudo ufw deny 22/tcp
+
+#activating firewall
+sudo ufw enable
+sudo ufw status numbered
+
+echo "------------------------------------------"
+echo "creating JWT token"
+echo "------------------------------------------"
+
+sudo mkdir -p /var/lib/jwtsecret
+openssl rand -hex 32 | sudo tee /var/lib/jwtsecret/jwt.hex
+sudo chmod +r /var/lib/jwtsecret/jwt.hex
+
+echo "------------------------------------------"
+echo "installing Besu"
+echo "------------------------------------------"
+
+#check version number:
+#https://github.com/hyperledger/besu/releases
+
+cd ~
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.7.2/besu-23.7.2.tar.gz
+tar xvf besu-23.7.2.tar.gz
+sudo cp -a besu-23.7.2 /usr/local/bin/besu
+rm besu-23.7.2.tar.gz
+rm -r besu-23.7.2
+sudo apt -y install openjdk-17-jre
+sudo apt install -y libjemalloc-dev
+sudo useradd --no-create-home --shell /bin/false besu
+sudo mkdir -p /var/lib/besu
+sudo chown -R besu:besu /var/lib/besu
+
+sudo nano /var/lib/besu/config.toml
+
+#besu configuration
+network="mainnet"
+sync-mode="X_SNAP"
+data-path="/var/lib/besu"
+data-storage-format="BONSAI"
+engine-jwt-secret="/var/lib/jwtsecret/jwt.hex"
+p2p-port=30305
+nat-method="UPNPP2PONLY"
+#next is for enabling data collection for prometheus/grafana use
+#metrics-enabled=true
+#next are for using besu as RPC
+#rpc-http-enabled=true
+#rpc-http-host="0.0.0.0"
+#rpc-http-port="8545"
+#rpc-http-cors-origins=["chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn"]
+#host-allowlist=["*"]
+
+sudo nano /etc/systemd/system/besu.service
+
+[Unit]
+Description=Besu Execution Client (Mainnet)
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=besu
+Group=besu
+Type=simple
+Restart=always
+RestartSec=5
+Environment="JAVA_OPTS=-Xmx5g"
+ExecStart=/usr/local/bin/besu/bin/besu \
+  --config-file=/var/lib/besu/config.toml
+[Install]
+WantedBy=multi-user.target
+
+#if problems for sync
+#add your WAN ADDRESS in the service configuration file if needed with   --p2p-host=WAN_ADDRESS_HERE
+
+sudo systemctl daemon-reload
+sudo systemctl start besu
+sudo systemctl status besu
+
+sudo journalctl -fu besu
+
+sudo systemctl enable besu
+
+echo "------------------------------------------"
+echo "installating lighthouse"
+echo "------------------------------------------"
+
+sudo apt install curl
+curl -LO https://github.com/sigp/lighthouse/releases/download/v4.4.1/lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+
+tar xvf lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+sudo cp lighthouse /usr/local/bin
+sudo rm lighthouse lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+
+echo "------------------------------------------"
+echo "importing validators"
+echo "------------------------------------------"
+
+sudo mkdir -p /var/lib/lighthouse
+sudo chown -R eth2:eth2 /var/lib/lighthouse
+#add validators here (will create /var/lib/lighthouse/validators) if you have some
+#/usr/local/bin/lighthouse --network mainnet account validator import --directory /home/eth2/validator_keys --datadir /var/lib/lighthouse
+#otherwise do
+sudo mkdir /var/lib/lighthouse/validators
+sudo chown -R root:root /var/lib/lighthouse
+
+echo "------------------------------------------"
+echo "creating lighthouse beacon service"
+echo "------------------------------------------"
+
+sudo useradd --no-create-home --shell /bin/false lighthousebeacon
+sudo mkdir -p /var/lib/lighthouse/beacon
+sudo chown -R lighthousebeacon:lighthousebeacon /var/lib/lighthouse/beacon
+sudo chmod 700 /var/lib/lighthouse/beacon
+
+cat <<EOF >/etc/systemd/system/lighthousebeacon.service
+[Unit]
+Description=Lighthouse Eth2 Client Beacon Node
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=lighthousebeacon
+Group=lighthousebeacon
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/lighthouse bn \
+  --network mainnet \
+  --datadir /var/lib/lighthouse \
+  --http \
+  --execution-endpoint http://127.0.0.1:8551 \
+  --execution-jwt /var/lib/jwtsecret/jwt.hex \
+#  --metrics \
+#  --metrics_allow-origin "*" \
+  --checkpoint-sync-url https://mainnet.checkpoint.sigp.io \
+  --builder http://localhost:18550 \
+  --builder-profit-threshold 250000000000000000
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# the metrics can be enabled for prometheus/grafana
+
+sudo systemctl daemon-reload
+sudo systemctl start lighthousebeacon
+sudo systemctl enable lighthousebeacon
+
+echo "------------------------------------------"
+echo "creating validator service"
+echo "------------------------------------------"
+
+sudo useradd --no-create-home --shell /bin/false lighthousevalidator
+#you must allready have imported keys here if you have some
+sudo chown -R lighthousevalidator:lighthousevalidator /var/lib/lighthouse/validators
+sudo chmod 700 /var/lib/lighthouse/validators
+
+cat <<EOF >/etc/systemd/system/lighthousevalidator.service
+[Unit]
+Description=Lighthouse Eth2 Client Validator Node
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=lighthousevalidator
+Group=lighthousevalidator
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/lighthouse vc \
+  --network mainnet \
+  --datadir /var/lib/lighthouse \
+  --suggested-fee-recipient 0x0000000000000000000000000000000000000000 \
+#  --metrics \
+#  --metrics-allow-origin "*" \
+  --graffiti "🐼 Hey 🐼" \
+  --builder-proposals
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# the metrics can be enabled for prometheus/grafana
+# do not forget to change the fee recipient address
+  
+sudo systemctl daemon-reload
+sudo systemctl start lighthousevalidator
+sudo systemctl enable lighthousevalidator
+
+echo "------------------------------------------"
+echo "installing MEV boost"
+echo "------------------------------------------"
+
+sudo useradd --no-create-home --shell /bin/false mevboost
+cd ~
+wget https://github.com/flashbots/mev-boost/releases/download/v1.6/mev-boost_1.6_linux_amd64.tar.gz
+#sha256sum mev-boost_1.6_linux_amd64.tar.gz
+tar xvf mev-boost_1.6_linux_amd64.tar.gz
+sudo cp mev-boost /usr/local/bin
+rm mev-boost LICENSE README.md mev-boost_1.6_linux_amd64.tar.gz
+sudo chown mevboost:mevboost /usr/local/bin/mev-boost
+
+echo done
+
+echo "------------------------------------------"
+echo "creating mev-boost service"
+echo "------------------------------------------"
+
+cat <<EOF >/etc/systemd/system/mevboost.service
+[Unit]
+Description=mev-boost (Mainnet)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=mevboost
+Group=mevboost
+Restart=always
+RestartSec=5
+ExecStart=mev-boost \
+    -mainnet \
+    -relay-check \
+    -relays https://0x8b5d2e73e2a3a55c6c87b8b6eb92e0149a125c852751db1422fa951e42a09b82c142c3ea98d0d9930b056a3bc9896b8f@bloxroute.max-profit.blxrbdn.com
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl start mevboost
+sudo systemctl enable mevboost
+
+echo "------------------------------------------"
+echo "Script done"
+echo "------------------------------------------"
+
+
+
+
+
+
+#Updating Besu
+#https://github.com/hyperledger/besu/releases
+#As of 23.1.0 Besu requires Java 17 to run. Use $ java -version to determine the version you have installed. If it is not 17 or greater, then run the following command 
+#sudo apt -y install openjdk-17-jre to install Java 17 
+#before updating.
+
+cd ~
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.7.3/besu-23.7.3.tar.gz
+
+sudo systemctl stop besu
+tar xvf besu-23.7.3.tar.gz
+sudo rm -r /usr/local/bin/besu
+sudo cp -a besu-23.7.3 /usr/local/bin/besu
+rm besu-23.7.3.tar.gz
+rm -r besu-23.7.3
+
+sudo systemctl start besu
+sudo systemctl status besu
+sudo journalctl -fu besu
+
+/usr/local/bin/besu/bin/besu --version # <-- should display version information 23.7.3
+
+#update lighthouse : 
+#verify version : 
+#https://github.com/sigp/lighthouse/releases
+
+cd ~
+sudo apt install curl
+curl -LO https://github.com/sigp/lighthouse/releases/download/v4.5.0/lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
+
+sudo systemctl stop lighthousevalidator
+sudo systemctl stop lighthousebeacon
+sudo systemctl stop geth
+sudo systemctl stop mevboost
+
+tar xvf lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
+sudo cp lighthouse /usr/local/bin
+
+sudo systemctl start besu
+sudo systemctl status besu
+sudo journalctl -fu besu
+sudo systemctl start lighthousebeacon
+sudo systemctl status lighthousebeacon
+sudo journalctl -fu lighthousebeacon
+sudo systemctl start lighthousevalidator
+sudo systemctl status lighthousevalidator
+sudo journalctl -fu lighthousevalidator
+sudo systemctl start mevboost
+sudo systemctl status mevboost
+sudo journalctl -fu  mevboost
+
+cd ~
+sudo rm lighthouse
+sudo rm lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
+
+/usr/local/bin/lighthouse --version # <-- should display version information 4.5.0
