@@ -1,0 +1,188 @@
+firewall :
+sudo ufw allow 3000/tcp
+
+
+besu config :
+add to config file :
+metrics-enabled=true
+
+
+lighthouse config :
+add to beacon service :
+  --metrics \
+  --metrics_allow-origin "*" \
+add to validator service :
+  --metrics \
+  --metrics-allow-origin "*" \
+
+
+installation prometheus :
+verify version here :
+https://prometheus.io/download/
+curl -LO https://github.com/prometheus/prometheus/releases/download/v2.47.0/prometheus-2.47.0.linux-amd64.tar.gz
+
+tar xvf prometheus-2.47.0.linux-amd64.tar.gz
+sudo cp prometheus-2.47.0.linux-amd64/prometheus /usr/local/bin/
+sudo cp prometheus-2.47.0.linux-amd64/promtool /usr/local/bin/
+
+sudo cp -r prometheus-2.47.0.linux-amd64/consoles /etc/prometheus
+sudo cp -r prometheus-2.47.0.linux-amd64/console_libraries /etc/prometheus
+
+rm prometheus-2.47.0.linux-amd64.tar.gz
+rm -r prometheus-2.47.0.linux-amd64
+
+sudo useradd --no-create-home --shell /bin/false prometheus
+sudo mkdir -p /var/lib/prometheus
+sudo nano /etc/prometheus/prometheus.yml
+
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+  - job_name: node_exporter
+    static_configs:
+      - targets:
+          - localhost:9100
+  - job_name: lighthouse
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - localhost:5054
+  - job_name: besu
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - localhost:9545
+
+
+
+sudo chown -R prometheus:prometheus /etc/prometheus
+sudo chown -R prometheus:prometheus /var/lib/prometheus
+
+cat <<EOF >/etc/systemd/system/prometheus.service
+
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=simple
+User=prometheus
+Group=prometheus
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl start prometheus
+sudo systemctl status prometheus
+
+sudo journalctl -fu prometheus
+
+sudo systemctl enable prometheus
+
+
+
+
+installation node exporter (module prometeus)
+verify version here : 
+https://prometheus.io/download/#node_exporter
+
+curl -LO https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+
+tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
+sudo cp node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin
+
+rm node_exporter-1.6.1.linux-amd64.tar.gz
+rm -r node_exporter-1.6.1.linux-amd64
+
+sudo useradd --no-create-home --shell /bin/false node_exporter
+
+cat <<EOF >/etc/systemd/system/node_exporter.service
+
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/node_exporter
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo systemctl status node_exporter
+
+sudo journalctl -fu node_exporter
+
+sudo systemctl enable node_exporter
+
+
+
+installation grafana :
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
+
+sudo apt update
+
+apt-cache policy grafana
+
+Output should look like this:
+grafana:
+  Installed: (none)
+  Candidate: 9.0.5
+  Version table:
+     9.0.5 500
+        500 https://packages.grafana.com/oss/deb stable/main amd64     
+  Packages
+     9.0.4 500
+        500 https://packages.grafana.com/oss/deb stable/main amd64 
+etc ...
+
+sudo apt install -y grafana
+
+sudo systemctl start grafana-server
+sudo systemctl status grafana-server
+
+sudo journalctl -fu grafana-server
+
+sudo systemctl enable grafana-server
+
+
+
+remotly connecting to grafana from local network :
+http://<yourserverip>:3000/
+default login // password => admin // admin
+
+http://<yourserverip>:3000/datasources
+Click on Add data source and then choose Prometheus. Enter http://localhost:9090 for the URL then click on Save and Test.
+
+besu dashboard :
+Dashboards then Import.
+Besu number : 10273
+select the datasource prometheus too
+
+lighthouse dashboard :
+https://raw.githubusercontent.com/sigp/lighthouse-metrics/master/dashboards/Summary.json
+select the datasource prometheus too
+
+
+
+somer esat guide that helped:
+https://someresat.medium.com/guide-to-staking-on-ethereum-ubuntu-g%C3%B6erli-lighthouse-8d0a2a811e6e
