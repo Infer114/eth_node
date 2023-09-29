@@ -1,0 +1,20 @@
+start.sh
+sudo systemctl start lighthousevalidator
+sudo systemctl start lighthousebeacon
+sudo systemctl start besu
+sudo systemctl start mevboost
+sudo systemctl start prometheus
+sudo systemctl start node_exporter
+sudo systemctl start grafana-server
+
+
+
+stop.sh
+sudo systemctl stop lighthousevalidator
+sudo systemctl stop lighthousebeacon
+sudo systemctl stop besu
+sudo systemctl stop mevboost
+sudo systemctl stop prometheus
+sudo systemctl stop node_exporter
+sudo systemctl stop grafana-server
+sudo apt update && sudo apt upgrade -y
