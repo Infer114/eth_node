@@ -34,7 +34,8 @@ sudo ufw allow 9000
 sudo nano /etc/ssh/sshd_config
 #add ssh port here
 sudo systemctl restart ssh
-sudo ufw allow 1114/tcp
+#allow your own port now :
+sudo ufw allow XXXX/tcp
 sudo ufw deny 22/tcp
 
 #activating firewall
