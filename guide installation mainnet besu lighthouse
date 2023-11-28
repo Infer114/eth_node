@@ -56,11 +56,11 @@ echo "------------------------------------------"
 #https://github.com/hyperledger/besu/releases
 
 cd ~
-curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.7.2/besu-23.7.2.tar.gz
-tar xvf besu-23.7.2.tar.gz
-sudo cp -a besu-23.7.2 /usr/local/bin/besu
-rm besu-23.7.2.tar.gz
-rm -r besu-23.7.2
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.10.2/besu-23.10.2.tar.gz
+tar xvf besu-23.10.2.tar.gz
+sudo cp -a besu-23.10.2 /usr/local/bin/besu
+rm besu-23.10.2.tar.gz
+rm -r besu-23.10.2
 sudo apt -y install openjdk-17-jre
 sudo apt install -y libjemalloc-dev
 sudo useradd --no-create-home --shell /bin/false besu
@@ -75,7 +75,7 @@ sync-mode="X_SNAP"
 data-path="/var/lib/besu"
 data-storage-format="BONSAI"
 engine-jwt-secret="/var/lib/jwtsecret/jwt.hex"
-p2p-port=30305
+p2p-port=30304
 nat-method="UPNPP2PONLY"
 #next is for enabling data collection for prometheus/grafana use
 #metrics-enabled=true
@@ -121,11 +121,11 @@ echo "installating lighthouse"
 echo "------------------------------------------"
 
 sudo apt install curl
-curl -LO https://github.com/sigp/lighthouse/releases/download/v4.4.1/lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+curl -LO https://github.com/sigp/lighthouse/releases/download/v4.5.0/lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
 
-tar xvf lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+tar xvf lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
 sudo cp lighthouse /usr/local/bin
-sudo rm lighthouse lighthouse-v4.4.1-x86_64-unknown-linux-gnu.tar.gz
+sudo rm lighthouse lighthouse-v4.5.0-x86_64-unknown-linux-gnu.tar.gz
 
 echo "------------------------------------------"
 echo "importing validators"
