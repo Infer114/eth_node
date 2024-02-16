@@ -60,11 +60,11 @@ echo "------------------------------------------"
 #https://github.com/hyperledger/besu/releases
 
 cd ~
-curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/23.10.2/besu-23.10.2.tar.gz
-tar xvf besu-23.10.2.tar.gz
-sudo cp -a besu-23.10.2 /usr/local/bin/besu
-rm besu-23.10.2.tar.gz
-rm -r besu-23.10.2
+curl -LO https://hyperledger.jfrog.io/hyperledger/besu-binaries/besu/24.1.2/besu-24.1.2.tar.gz
+tar xvf besu-24.1.2.tar.gz
+sudo cp -a besu-24.1.2 /usr/local/bin/besu
+rm besu-24.1.2.tar.gz
+rm -r besu-24.1.2
 sudo apt -y install openjdk-17-jre
 sudo apt install -y libjemalloc-dev
 sudo useradd --no-create-home --shell /bin/false besu
