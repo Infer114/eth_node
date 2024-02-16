@@ -11,6 +11,10 @@ usermod -aG sudo eth2
 sudo apt update && sudo apt upgrade -y
 sudo apt dist-upgrade && sudo apt autoremove
 
+#deactivate autoupdates if you prefer to do it manualy
+sudo nano /etc/apt/apt.conf.d/20auto-upgrades
+#set both to 0
+
 echo "------------------------------------------"
 echo "installing and configuring firewall"
 echo "------------------------------------------"
