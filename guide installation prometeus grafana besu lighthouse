@@ -10,7 +10,7 @@ metrics-enabled=true
 lighthouse config :
 add to beacon service :
   --metrics \
-  --metrics_allow-origin "*" \
+  --metrics-allow-origin "*" \
 add to validator service :
   --metrics \
   --metrics-allow-origin "*" \
